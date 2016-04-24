@@ -1,23 +1,22 @@
-'use strict'
-const gulp = require('gulp');
-const gutil = require('gulp-util');
-const gulpif = require('gulp-if');
-const autoprefixer = require('gulp-autoprefixer');
-const cssmin = require('gulp-cssmin');
-const less = require('gulp-less');
-const concat = require('gulp-concat');
-const plumber = require('gulp-plumber');
-const buffer = require('vinyl-buffer');
-const source = require('vinyl-source-stream');
-const babelify = require('babelify');
-const browserify = require('browserify');
-const watchify = require('watchify');
-const uglify = require('gulp-uglify');
-const sourcemaps = require('gulp-sourcemaps');
+var gulp = require('gulp');
+var gutil = require('gulp-util');
+var gulpif = require('gulp-if');
+var autoprefixer = require('gulp-autoprefixer');
+var cssmin = require('gulp-cssmin');
+var less = require('gulp-less');
+var concat = require('gulp-concat');
+var plumber = require('gulp-plumber');
+var buffer = require('vinyl-buffer');
+var source = require('vinyl-source-stream');
+var babelify = require('babelify');
+var browserify = require('browserify');
+var watchify = require('watchify');
+var uglify = require('gulp-uglify');
+var sourcemaps = require('gulp-sourcemaps');
 
-const production = process.env.NODE_ENV === 'production';
+var production = process.env.NODE_ENV === 'production';
 
-const dependencies = [
+var dependencies = [
   'alt',
   'react',
   'react-dom',
@@ -30,7 +29,7 @@ const dependencies = [
  | Combine all JS libraries into a single file for fewer HTTP requests.
  |--------------------------------------------------------------------------
  */
-gulp.task('vendor', () => {
+gulp.task('vendor', function() {
   return gulp.src([
     'bower_components/jquery/dist/jquery.js',
     'bower_components/bootstrap/dist/js/bootstrap.js',
@@ -46,7 +45,7 @@ gulp.task('vendor', () => {
  | Compile third-party dependencies separately for faster performance.
  |--------------------------------------------------------------------------
  */
-gulp.task('browserify-vendor', () => {
+gulp.task('browserify-vendor', function() {
   return browserify()
     .require(dependencies)
     .bundle()
@@ -61,7 +60,7 @@ gulp.task('browserify-vendor', () => {
  | Compile only project files, excluding all third-party dependencies.
  |--------------------------------------------------------------------------
  */
-gulp.task('browserify', ['browserify-vendor'], () => {
+gulp.task('browserify', ['browserify-vendor'], function() {
   return browserify({ entries: 'app/main.js', debug: true })
     .external(dependencies)
     .transform(babelify, { presets: ['es2015', 'react'] })
@@ -79,20 +78,20 @@ gulp.task('browserify', ['browserify-vendor'], () => {
  | Same as browserify task, but will also watch for changes and re-compile.
  |--------------------------------------------------------------------------
  */
-gulp.task('browserify-watch', ['browserify-vendor'], () => {
-  let bundler = watchify(browserify({ entries: 'app/main.js', debug: true }, watchify.args));
+gulp.task('browserify-watch', ['browserify-vendor'], function() {
+  var bundler = watchify(browserify({ entries: 'app/main.js', debug: true }, watchify.args));
   bundler.external(dependencies);
   bundler.transform(babelify, { presets: ['es2015', 'react'] });
   bundler.on('update', rebundle);
   return rebundle();
 
-   rebundle() => {
-    let start = Date.now();
+  function rebundle() {
+    var start = Date.now();
     return bundler.bundle()
-      .on('error', (e =>rr) {
+      .on('error', function(err) {
         gutil.log(gutil.colors.red(err.toString()));
       })
-      .on('end', () => {
+      .on('end', function() {
         gutil.log(gutil.colors.green('Finished rebundling in', (Date.now() - start) + 'ms.'));
       })
       .pipe(source('bundle.js'))
@@ -108,7 +107,7 @@ gulp.task('browserify-watch', ['browserify-vendor'], () => {
  | Compile LESS stylesheets.
  |--------------------------------------------------------------------------
  */
-gulp.task('styles', () => {
+gulp.task('styles', function() {
   return gulp.src('app/stylesheets/main.less')
     .pipe(plumber())
     .pipe(less())
@@ -117,8 +116,9 @@ gulp.task('styles', () => {
     .pipe(gulp.dest('public/css'));
 });
 
-gulp.task('watch', () => {
+gulp.task('watch', function() {
   gulp.watch('app/stylesheets/**/*.less', ['styles']);
 });
 
 gulp.task('default', ['styles', 'vendor', 'browserify-watch', 'watch']);
+gulp.task('build', ['styles', 'vendor', 'browserify']);
