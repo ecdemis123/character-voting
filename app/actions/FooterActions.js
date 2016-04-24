@@ -4,7 +4,7 @@ class FooterActions {
   constructor() {
     this.generateActions(
       'getTopCharactersSuccess',
-      'getTopCharactersFails'
+      'getTopCharactersFail'
     );
   }
 

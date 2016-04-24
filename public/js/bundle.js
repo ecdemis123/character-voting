@@ -19,7 +19,7 @@ var FooterActions = function () {
   function FooterActions() {
     _classCallCheck(this, FooterActions);
 
-    this.generateActions('getTopCharactersSuccess', 'getTopCharactersFails');
+    this.generateActions('getTopCharactersSuccess', 'getTopCharactersFail');
   }
 
   _createClass(FooterActions, [{
