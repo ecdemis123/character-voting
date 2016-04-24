@@ -2,8 +2,8 @@
 require('babel-register');
 const swig = require('swig');
 const React = require('react');
-const ReactDom = require('react-dom/server');
-const router = require('react-router');
+const ReactDOM = require('react-dom/server');
+const Router = require('react-router');
 const routes = require('./app/routes');
 
 const express = require('express');
